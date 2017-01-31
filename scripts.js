@@ -1,6 +1,60 @@
+$(document).ready(function() {
+
+  // Get the browsers coordinates
+  var latitude = "";
+  var longitude = "";
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      // $("#data").html("latitude: " + position.coords.latitude + "<br>longitude: " + position.coords.longitude);
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+    });
+  }
+
+  $("#getMessage").on("click", function(){
+    $(".message").html("lat: " + latitude + " long: " + longitude);
+  });
+});
 
 
 /*
+var latitude = "";
+var longitude = "";
+
+$(document).ready(function() {
+  // Get the users coordinates
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      $("#data").html("latitude: " + position.coords.latitude + "<br>longitude: " + position.coords.longitude);
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+    });
+  }
+});
+
+
+  function getWeatherDetail() {
+    var weatherURL = "http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=09449d6c9c3b937d6a67e55e34b1bfab";
+    console.log(weatherURL);
+    var html = "";
+    $.getJSON(weatherURL, function(json) {
+
+      json.forEach(function(val) {
+        var keys = Object.keys(val);
+        html += "<div class = 'cat'>";
+        keys.forEach(function(key) {
+          html += "<strong>" + key + "</strong>: " + val[key] + "<br>";
+        });
+      });
+    html += "</div><br>";
+    });
+  $(".message").html(html);
+
+  };
+
+
 
 From prior project:
 
