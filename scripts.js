@@ -47,7 +47,7 @@ function getWeatherDetail() {
       weatherData = data;
       changeBackgroundImg(weatherData.weather[0].main);
       getFahrenheit();
-      document.getElementById("city").innerHTML = weatherData.name;
+      document.getElementById("city").innerHTML = "The current weather in<br>" + weatherData.name;
       document.getElementById("conditions").innerHTML = weatherData.weather[0].description;
     },
     error: function(err) { alert(err); },
