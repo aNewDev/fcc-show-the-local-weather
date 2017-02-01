@@ -1,107 +1,69 @@
+// After loading the page, execute the first function
+
 $(document).ready(function() {
-
-  // Get the browsers coordinates
-  var latitude = "";
-  var longitude = "";
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      // $("#data").html("latitude: " + position.coords.latitude + "<br>longitude: " + position.coords.longitude);
-      latitude = position.coords.latitude;
-      longitude = position.coords.longitude;
-    });
-  }
-
-  $("#getMessage").on("click", function(){
-    $(".message").html("lat: " + latitude + " long: " + longitude);
-  });
+  geoFindMe();
 });
 
 
-/*
+
+// Set global variables
 var latitude = "";
 var longitude = "";
+var weatherURL = "";
+var weatherData = {};
 
-$(document).ready(function() {
-  // Get the users coordinates
+// Get the location from the browser
+function geoFindMe() {
+  var output = document.getElementById("data");
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      $("#data").html("latitude: " + position.coords.latitude + "<br>longitude: " + position.coords.longitude);
-      latitude = position.coords.latitude;
-      longitude = position.coords.longitude;
-    });
+  if (!navigator.geolocation){
+    output.innerHTML = "Geolocation is not supported by your browser";
+    return;
   }
-});
 
+  function success(position) {
+    latitude  = position.coords.latitude;
+    longitude = position.coords.longitude;
 
-  function getWeatherDetail() {
-    var weatherURL = "http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=09449d6c9c3b937d6a67e55e34b1bfab";
-    console.log(weatherURL);
-    var html = "";
-    $.getJSON(weatherURL, function(json) {
+    output.innerHTML = 'Latitude is ' + latitude + '° <br>Longitude is ' + longitude + '°';
 
-      json.forEach(function(val) {
-        var keys = Object.keys(val);
-        html += "<div class = 'cat'>";
-        keys.forEach(function(key) {
-          html += "<strong>" + key + "</strong>: " + val[key] + "<br>";
-        });
-      });
-    html += "</div><br>";
-    });
-  $(".message").html(html);
+    getWeatherDetail();
 
-  };
+    }
 
+  function error() {
+    output.innerHTML = "Unable to retrieve your location";
+  }
 
+  output.innerHTML = "Locating…";
 
-From prior project:
+  navigator.geolocation.getCurrentPosition(success, error);
+}
 
-// Load the first quote to be seen
-$(document).ready(function(){
-  getQuote();
-});
+// Pull the weather from openweathermap and post the weather on the page
+function getWeatherDetail() {
+  //weatherURL = ;
 
-// Set color variables to be used when clicking refresh
-var bodyBackground = ["bg-primary", "bg-success", "bg-info", "bg-warning", "bg-danger"];
-var btn = ["btn bg-primary", "btn bg-success", "btn bg-info", "btn bg-warning", "btn bg-danger"];
-var blockQuote = ["blockquote-reverse text-primary", "blockquote-reverse text-success", "blockquote-reverse text-info", "blockquote-reverse text-warning", "blockquote-reverse text-danger"];
-var twitterLink = ["twitter-share-button text-primary", "twitter-share-button text-success", "twitter-share-button text-info", "twitter-share-button text-warning", "twitter-share-button text-danger"];
-var refresh = 0;
-
-// Pull a quote from mashape API, update the twitter text, and change the color of the page
-function getQuote() {
   var output = $.ajax({
-    url: 'https://andruxnet-random-famous-quotes.p.mashape.com/',
+    url: "http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=imperial&APPID=09449d6c9c3b937d6a67e55e34b1bfab",
     type: 'GET',
     data: {},
     dataType: 'json',
     success: function(data) {
-    // Update the quote text and author on the page
-     	document.getElementById("quote").innerHTML = data.quote;
-      document.getElementById("author").innerHTML = data.author;
-    // Update the text to send to the twitter quote
-      var currentQuote = data.quote;
-      var currentAuthor = data.author;
-      var strLink = "https://twitter.com/intent/tweet?text=" + '"' + currentQuote +'" '+ currentAuthor;
-      document.getElementById("twitterLink").setAttribute("href", strLink);
-    // Change the colors of elements
-      document.getElementById("body").className = bodyBackground[refresh];
-      document.getElementById("btn").className = btn[refresh];
-      document.getElementById("blockquote").className = blockQuote[refresh];
-      document.getElementById("twitterLink").className = twitterLink[refresh];
-    // Update the color to use on next click
-      if (refresh < btn.length - 1) {
-        refresh++;
-      } else {
-        refresh = 0;
-      }
+    // assign the weatherData for future use, and set the page values to current weather
+      weatherData = data;
+      console.log(weatherData);
+      document.getElementById("city").innerHTML = weatherData.name;
+     	document.getElementById("temp").innerHTML = Math.round(weatherData.main.temp) + '° F';
+      document.getElementById("conditions").innerHTML = weatherData.weather[0].description;
+      changeBackgroundImg(weatherData.weather[0].main);
     },
     error: function(err) { alert(err); },
-    beforeSend: function(xhr) {
-    xhr.setRequestHeader("X-Mashape-Authorization", "op03oMcDkgmshm2pMxB4vxfM4Thup1hx1yRjsnMsQdJdtmPqKN");
-    }
   });
 };
-*/
+
+// change the background image
+
+function changeBackgroundImg(group) {
+  document.body.style.backgroundImage = "url(https://s3.amazonaws.com/assetsanewdevio/fccweather/" + group + ".jpg)";
+}
