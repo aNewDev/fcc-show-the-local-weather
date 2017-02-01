@@ -8,6 +8,7 @@ $(document).ready(function() {
     var latLon = (response.loc).split(',');
     var latitude = latLon[0];
     var longitude = latLon[1];
+    document.getElementById("city").innerHTML = "The current weather in<br>" + response.city;
     getWeatherDetail(latitude, longitude);
   }, "jsonp")
 });
@@ -24,7 +25,6 @@ function getWeatherDetail(lat, lon) {
       weatherData = data;
       changeBackgroundImg(weatherData.weather[0].main);
       getFahrenheit();
-      document.getElementById("city").innerHTML = "The current weather in<br>" + weatherData.name;
       document.getElementById("conditions").innerHTML = weatherData.weather[0].description;
     },
     error: function(err) { alert(err); },
