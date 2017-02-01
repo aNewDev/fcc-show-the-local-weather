@@ -1,4 +1,3 @@
-
 // Set global variables
 var weatherData = {};
 
