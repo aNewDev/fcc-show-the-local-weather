@@ -1,44 +1,21 @@
-// After loading the page, execute the first function
-
-$(document).ready(function() {
-  geoFindMe();
-});
-
-
 
 // Set global variables
-var latitude = "";
-var longitude = "";
-var weatherURL = "";
 var weatherData = {};
 
-// Get the location from the browser
-function geoFindMe() {
-  var output = document.getElementById("data");
-
-  if (!navigator.geolocation){
-    output.innerHTML = "Geolocation is not supported by your browser";
-    return;
-  }
-
-  function success(position) {
-    latitude  = position.coords.latitude;
-    longitude = position.coords.longitude;
-    getWeatherDetail();
-    }
-
-  function error() {
-    output.innerHTML = "Unable to retrieve your location";
-  }
-
-  navigator.geolocation.getCurrentPosition(success, error);
-}
+// After loading the page, get lat lon from ipinfo and execute the first function
+$(document).ready(function() {
+  $.get("http://ipinfo.io/geo", function(response) {
+    var latLon = (response.loc).split(',');
+    var latitude = latLon[0];
+    var longitude = latLon[1];
+    getWeatherDetail(latitude, longitude);
+  }, "jsonp")
+});
 
 // Pull the weather from openweathermap and post the weather on the page
-function getWeatherDetail() {
-
+function getWeatherDetail(lat, lon) {
   var output = $.ajax({
-    url: "http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=imperial&APPID=09449d6c9c3b937d6a67e55e34b1bfab",
+    url: "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&units=imperial&APPID=09449d6c9c3b937d6a67e55e34b1bfab",
     type: 'GET',
     data: {},
     dataType: 'json',
@@ -55,13 +32,11 @@ function getWeatherDetail() {
 };
 
 // change the background image
-
 function changeBackgroundImg(group) {
   document.body.style.backgroundImage = "url(https://s3.amazonaws.com/assetsanewdevio/fccweather/" + group + ".jpg)";
 }
 
 // get celsius temp from fahrenheit
-
 function getCelsius() {
   document.getElementById("temp").innerHTML = Math.round((weatherData.main.temp - 32) * 5 / 9) + '° <a onclick="getFahrenheit()" href="#">C</span>';
 }
